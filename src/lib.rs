@@ -15,8 +15,7 @@ pub fn create() {
         *pixel = image::Rgb([r, 0, b]);
     }
 
-    for x in 0..imgx {
-        println!("x is {} out of {}", x, imgx);
+    for x in 0..imgx { println!("x is {} out of {}", x, imgx);
         for y in 0..imgy {
             let cx = y as f32 * scalex - 1.0;
             let cy = x as f32 * scaley - 1.5;
@@ -35,27 +34,32 @@ pub fn create() {
         }
     }
 
-    let filename = getFilename();
+    let filename = get_filename();
     imgbuf.save(filename).unwrap();
 }
 
-pub fn getFilename() -> String {
+pub fn get_filename() -> String {
     let mut filename = String::from("fractal.png");
     let args: Vec<String> = env::args().collect();
 
-    let output_index: usize = getOutputIndex(&args);
-    if output_index < args.len() {
-        filename = args[output_index + 1].clone();
+    let output_index: Option<usize> = get_output_index(&args);
+
+    match output_index {
+        Some(usize) => {
+            filename = args[output_index.unwrap() + 1].clone();
+        }
+        None => println!("No output flag (-o), default name used (fractal.png)"),
     }
+
     filename
 }
 
-fn getOutputIndex(args: &Vec<String>) -> usize {
+fn get_output_index(args: &Vec<String>) -> Option<usize> {
+    let mut correct_index: Option<usize> = None;
     for (i, item) in args.iter().enumerate() {
         if item == "-o" {
-            return i;
+            correct_index = Some(i);
         }
     }
-
-    args.len() + 1
+    correct_index
 }
